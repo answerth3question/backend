@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY . /app
 
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
+RUN pip install -r requirements.txt
 
-CMD
+# Heroku should ignore this and use the "run" config in the heroku.yml file
+CMD ["flask", "run", "--host=0.0.0.0"]
