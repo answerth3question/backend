@@ -1,5 +1,6 @@
 from flask.json import JSONEncoder
 from datetime import date, tzinfo, timedelta
+from app.db import db
 
 class SimpleUTC(tzinfo):
   def tzname(self, **kwargs):
@@ -15,4 +16,6 @@ class CustomJSONEncoder(JSONEncoder):
       return obj.replace(tzinfo=SimpleUTC()).isoformat()
     if isinstance(obj, timedelta):
       return str(obj)
+    if isinstance(obj, db.Model):
+      return str(obj.__dict__)
     return JSONEncoder.default(obj)
