@@ -12,15 +12,25 @@ auth_bp = Blueprint('auth_bp', __name__)
 @auth_bp.route("/login", methods=["POST"])
 def register_user():
   body = request.get_json()
-  print('at login', body)
+  args = request.args
+
+  # print('at login', body)
   user = User.find(body.get('sub'))
   print('user exists? ', user, user.role)
   if user:
-    token = create_access_token(user.id, user_claims={ 'role': user.role })
-    return jsonify({ 'id_token': token })
+    token = create_access_token(user.id, user_claims={ 'role': user.role.name })
+    return jsonify({ 
+      'id_token': token,
+      'username': user.username,
+      'role': user.role.name,
+    })
   user = User(id=body.get('sub'), username=body.get('username'), email=body.get('email'))
   user.save_to_db()
-  token = create_access_token(user.id, user_claims={ 'role': user.role })
-  return jsonify({ 'id_token': token })
+  token = create_access_token(user.id, user_claims={ 'role': user.role.name })
+  return jsonify({ 
+    'id_token': token,
+    'username': user.username,
+    'role': user.role.name,
+  })
 
 

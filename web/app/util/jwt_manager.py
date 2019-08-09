@@ -16,7 +16,7 @@ def admin_required(func):
   def wrapper(*args, **kwargs):
     verify_jwt_in_request()
     claims = get_jwt_claims()
-    if claims.get('roles') != 'admin':
+    if claims.get('role') != 'admin':
       abort(403)
     return func(*args, **kwargs)
   return wrapper

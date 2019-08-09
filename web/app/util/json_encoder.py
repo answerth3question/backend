@@ -17,5 +17,5 @@ class CustomJSONEncoder(JSONEncoder):
     if isinstance(obj, timedelta):
       return str(obj)
     if isinstance(obj, db.Model):
-      return str(obj.__dict__)
+      return obj.as_dict()
     return JSONEncoder.default(obj)
