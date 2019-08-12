@@ -1,36 +1,30 @@
 # this is a useful stackoverflow post on how to decode RS256 JWTs
 # https://stackoverflow.com/questions/20159782/how-can-i-decode-a-google-oauth-2-0-jwt-openid-connect-in-a-node-app
 
-
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token, jwt_required
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
-from app.models import User
+import app.helpers.auth as auth_helper
 
 auth_bp = Blueprint('auth_bp', __name__)
 
 @auth_bp.route("/login", methods=["POST"])
-def register_user():
-  body = request.get_json()
-  args = request.args
-
-  # print('at login', body)
-  user = User.find(body.get('sub'))
-  print('user exists? ', user, user.role)
-  if user:
-    token = create_access_token(user.id, user_claims={ 'role': user.role.name })
-    return jsonify({ 
-      'id_token': token,
-      'username': user.username,
-      'role': user.role.name,
-    })
-  user = User(id=body.get('sub'), username=body.get('username'), email=body.get('email'))
-  user.save_to_db()
+def login_user():
+  strategy = request.args.get('strategy', 'local')
+  if strategy == 'google':
+    user = auth_helper.google()
+  elif strategy == 'local':
+    pass
   token = create_access_token(user.id, user_claims={ 'role': user.role.name })
-  return jsonify({ 
-    'id_token': token,
-    'username': user.username,
-    'role': user.role.name,
-  })
+  return jsonify({ 'id_token': token })
+  
+
+@auth_bp.route('/user')
+@jwt_required
+def get_user():
+  user = User.find(id=get_jwt_identity())
+  if user:
+    return user
+  abort(400)
 
 
