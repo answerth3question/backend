@@ -1,5 +1,5 @@
 import dotenv
-from flask import Flask
+from flask import Flask, request
 
 from . import db
 from .util import CustomErrorHandler, CustomJSONEncoder, jwt
@@ -19,6 +19,10 @@ def create_app(config=None):
   db.init_app(app)
   error_handler.init_app(app)
   jwt.init_app(app)
+
+  @app.before_request
+  def before():
+    print(request.headers)
 
   app.register_blueprint(auth_bp, url_prefix='/api/auth')
   app.register_blueprint(admin_bp, url_prefix='/api/admin')

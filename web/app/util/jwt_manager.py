@@ -21,3 +21,14 @@ def admin_required(func):
     return func(*args, **kwargs)
   return wrapper
 
+def authenticated_role(role_name):
+  def idk(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+      verify_jwt_in_request()
+      claims = get_jwt_claims()
+      if role_name != claims.get('role'):
+        abort(403)
+      return func(*args, **kwargs)
+    return wrapper
+  return idk
