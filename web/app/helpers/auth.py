@@ -8,11 +8,16 @@ from app.models import User, RevokedToken
 def revoke_access_token(jti):
   try:
     token_to_revoke = RevokedToken(jti=jti)
+
     token_to_revoke.save_to_db()
+
   except BaseException as e:
     print('ERROR REVOKING ACCESS TOKEN', e)
+
     abort(500)
+
   return True
+
 
 def google_login():
   GOOGLE_DISCOVERY_DOCUMENT = 'https://accounts.google.com/.well-known/openid-configuration'

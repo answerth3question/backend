@@ -6,6 +6,7 @@ class User(db.Model):
   email = db.Column(db.String, unique=True, nullable=False)
   role_id = db.Column(db.Integer, db.ForeignKey('user_role.id'), default=1)
   role = db.relationship('UserRole', lazy='select', foreign_keys=role_id, uselist=False)
+  logins = db.relationship('UserLogin', lazy='dynamic')
 
   def __repr__(self):
     return f"User {self.id} - {self.email} - {self.username} - {self.role}"
