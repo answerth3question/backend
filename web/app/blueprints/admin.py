@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.util.jwt_manager import admin_required, authenticated_role, get_raw_jwt
+from app.util.jwt_manager import authenticated_role, get_raw_jwt
 from app.models import User
 
 admin_bp = Blueprint('admin_bp', __name__)
