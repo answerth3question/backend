@@ -9,4 +9,4 @@ class RevokedToken(db.Model):
 
   @classmethod
   def is_revoked(cls, jti):
-    return bool(cls.query.filter_by(jti).first)
+    return bool(cls.query.filter_by(jti=jti).first())
