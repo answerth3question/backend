@@ -1,6 +1,7 @@
 # this is a useful stackoverflow post on how to decode RS256 JWTs
 # https://stackoverflow.com/questions/20159782/how-can-i-decode-a-google-oauth-2-0-jwt-openid-connect-in-a-node-app
 
+from datetime import timedelta
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_raw_jwt
 
@@ -23,7 +24,18 @@ def login_user():
 
   login_record.save_to_db()
 
-  token = create_access_token(user.id, user_claims={ 'role': user.role.name })
+  user_roles = [role.name for role in user.roles]
+
+  if 'admin' in user_roles:
+    token_exp = timedelta(seconds=60 * 30) # half hour
+
+  elif 'reviewer' in user_roles:
+    token_exp = timedelta(seconds=60 * 60) # 1 hour
+  
+  else:
+    token_exp = timedelta(days=6) # 6 days
+
+  token = create_access_token(user.id, expires_delta=token_exp, user_claims={ 'roles': user_roles })
 
   return jsonify({ 'id_token': token })
   

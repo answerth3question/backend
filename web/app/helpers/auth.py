@@ -3,7 +3,7 @@ import jwt
 import requests
 from requests import RequestException # should use
 from flask import request, abort
-from app.models import User, RevokedToken
+from app.models import User, Role, RevokedToken
 
 def revoke_access_token(jti):
   try:
@@ -44,6 +44,10 @@ def google_login():
     
     app_user = User(id=decoded_id_token['sub'], username=decoded_id_token['given_name'], email=decoded_id_token['email'])
     
+    role = Role.query.get(1) # deault role is 'contributer'
+
+    app_user.roles.append(role)
+
     app_user.save_to_db()
     
     return app_user

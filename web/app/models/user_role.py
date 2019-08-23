@@ -1,12 +1,7 @@
 from app.db import db
 
-class UserRole(db.Model):
-  id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.String)
+user_role = db.Table('user_role',
+  db.Column('role_id', db.Integer, db.ForeignKey('role.id'), primary_key=True),
+  db.Column('user_id', db.String, db.ForeignKey('user.id'), primary_key=True)
+)
 
-  def __repr__(self):
-    return f"UserRole {self.id} - {self.name}"
-
-  def save_to_db(self):
-    db.session.add(self)
-    db.session.commit()
