@@ -1,11 +1,11 @@
 from app.db import db
 
-class Role(db.Model):
+class UserPermission(db.Model):
   id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.String)
+  name = db.Column(db.String, nullable=False)
 
   def __repr__(self):
-    return f"Role {self.id} - {self.name}"
+    return f"UserPermission {self.id} - {self.name}"
 
   def save_to_db(self):
     db.session.add(self)

@@ -24,18 +24,16 @@ def login_user():
 
   login_record.save_to_db()
 
-  user_roles = [role.name for role in user.roles]
-
-  if 'admin' in user_roles:
+  if user.role.name == 'admin':
     token_exp = timedelta(seconds=60 * 30) # half hour
 
-  elif 'reviewer' in user_roles:
+  elif user.role.name == 'reviewer':
     token_exp = timedelta(seconds=60 * 60) # 1 hour
   
   else:
     token_exp = timedelta(days=6) # 6 days
 
-  token = create_access_token(user.id, expires_delta=token_exp, user_claims={ 'roles': user_roles })
+  token = create_access_token(user.id, expires_delta=token_exp, user_claims={ 'role': user.role.name, 'permission': [perm.name for perm in user.role.permission] })
 
   return jsonify({ 'id_token': token })
   
