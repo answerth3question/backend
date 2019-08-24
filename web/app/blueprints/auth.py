@@ -33,7 +33,12 @@ def login_user():
   else:
     token_exp = timedelta(days=6) # 6 days
 
-  token = create_access_token(user.id, expires_delta=token_exp, user_claims={ 'role': user.role.name, 'permission': [perm.name for perm in user.role.permission] })
+  token = create_access_token(identity=user.id,
+                              expires_delta=token_exp,
+                              user_claims={ 
+                                'role': user.role.name,
+                                'permission': [perm.name for perm in user.role.permission]
+                              })
 
   return jsonify({ 'id_token': token })
   
