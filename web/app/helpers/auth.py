@@ -37,7 +37,7 @@ def google_login():
     
     decoded_id_token = jwt.decode(google_user['id_token'], verify=False)
     
-    app_user = RegisteredUser.find(decoded_id_token['sub'])
+    app_user = RegisteredUser.query.get(decoded_id_token['sub'])
     
     if app_user:
       return app_user

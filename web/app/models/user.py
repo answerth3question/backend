@@ -5,15 +5,21 @@ class RegisteredUser(db.Model):
   username = db.Column(db.String)
   email = db.Column(db.String, unique=True, nullable=False)
   role_id = db.Column(db.Integer, db.ForeignKey('user_role.id'))
-  role = db.relationship('UserRole', lazy='select')
+  role = db.relationship('UserRole', lazy='joined')
   logins = db.relationship('UserLogin', lazy='dynamic')
 
   def __repr__(self):
     return f"RegisteredUser {self.id} - {self.email} - {self.username} - {self.role}"
 
   @classmethod
-  def find(cls, id):
-    return cls.query.get(id)
+  def get_complete(cls, id):
+    user = cls.query.get(id)
+    if user:
+      return {
+        'logins': [l.ts for l in user.logins.all()],
+        'role': user.role,
+        'permission': user.role.permission
+      }
 
   def save_to_db(self):
     db.session.add(self)

@@ -14,11 +14,9 @@ def get_users():
 @authenticated_role("admin")
 def get_user(user_id):
   if request.method == "GET":
-    user = RegisteredUser.find(user_id)
+    user = RegisteredUser.get_complete(user_id)
 
-    logins = [l.ts for l in user.logins.all()]
-
-    return jsonify({ 'user': user, 'logins': logins })
+    return jsonify({ 'user': user })
 
   elif request.method == "PUT":
     user = RegisteredUser.find(user_id)
