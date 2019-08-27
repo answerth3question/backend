@@ -41,7 +41,7 @@ def login_user():
                               })
 
   return jsonify({ 'id_token': token })
-  
+
 
 @auth_bp.route('/revoke-access', methods=["POST"])
 @jwt_required

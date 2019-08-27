@@ -19,6 +19,5 @@ def get_user(user_id):
     return jsonify({ 'user': user })
 
   elif request.method == "PUT":
-    user = RegisteredUser.find(user_id)
+    user = RegisteredUser.query.get(user_id)
 
-    

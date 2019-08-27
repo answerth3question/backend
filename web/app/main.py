@@ -3,7 +3,7 @@ from flask import Flask, request
 
 from . import db
 from .util import CustomErrorHandler, CustomJSONEncoder, jwt
-from .blueprints import auth_bp, admin_bp
+from .blueprints import auth_bp, admin_bp, user_bp
 
 dotenv.load_dotenv()
 
@@ -26,6 +26,7 @@ def create_app(config=None):
 
   app.register_blueprint(auth_bp, url_prefix='/api/auth')
   app.register_blueprint(admin_bp, url_prefix='/api/admin')
+  app.register_blueprint(user_bp, url_prefix="/api/user")
 
   html = """
   <!DOCTYPE html>
