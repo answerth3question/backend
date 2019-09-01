@@ -7,6 +7,7 @@ class RegisteredUser(db.Model):
   role_id = db.Column(db.Integer, db.ForeignKey('user_role.id'))
   role = db.relationship('UserRole', lazy='joined')
   logins = db.relationship('UserLogin', lazy='dynamic')
+  posts = db.relationship('UserPost', lazy='dynamic')
 
   def __repr__(self):
     return f"RegisteredUser {self.id} - {self.email} - {self.username} - {self.role}"
@@ -21,6 +22,6 @@ class RegisteredUser(db.Model):
         'permission': user.role.permission
       }
 
-  def save_to_db(self):
-    db.session.add(self)
-    db.session.commit()
+  # def save_to_db(self):
+  #   db.session.add(self)
+  #   db.session.commit()
