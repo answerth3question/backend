@@ -11,17 +11,22 @@ def prompt():
 
   if request.method == 'GET':
     try:
-      pass
-    except:
+      return jsonify({ 'prompts': PostPrompt.query.all() })
+
+    except BaseException as e:
+      print(e)
       abort(500)
   
   elif request.method == 'POST':
     try:
       body = request.get_json()
 
-      prompt = PostPrompt(content=body['content'])
+      prompt = PostPrompt(text=body['text'])
 
       prompt.save_to_db()
 
-    except:
+      return 'success', 201
+
+    except BaseException as e:
+      print(e)
       abort(500)

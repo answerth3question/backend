@@ -4,7 +4,7 @@ from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP
 from app.db import db
 
 class UserPost(db.Model):
-  id = db.Column(UUID(as_uuid=True), primary_key=True)
+  id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
   ts = db.Column(TIMESTAMP(timezone=True), default=datetime.utcnow)
   status = db.Column(db.Integer, default=0)
   user_id = db.Column(db.String, db.ForeignKey('registered_user.id'), nullable=False)
@@ -12,10 +12,16 @@ class UserPost(db.Model):
   content = db.relationship('PostContent', uselist=False, lazy='joined')
   reviews = db.relationship('PostReview', lazy='select')
   
-
   def __repr__(self):
     content_slice = self.content.text[:20] if len(self.content.text) > 20 else self.content.text
     return f'UserPost {self.id} - {self.user_id} - {content_slice}'
+
+  def get_complete(self):
+    return {
+      **{ c.name: getattr(self, c.name) for c in self.__table__.columns },
+      'content': self.content,
+      'reviews': self.reviews
+    }
 
   def save_to_db(self):
     db.session.add(self)
