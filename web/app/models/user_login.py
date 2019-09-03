@@ -1,6 +1,5 @@
 from datetime import datetime
 from sqlalchemy.dialects.postgresql import TIMESTAMP
-from sqlalchemy import text
 from app.db import db
 
 class UserLogin(db.Model):

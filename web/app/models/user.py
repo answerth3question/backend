@@ -22,6 +22,6 @@ class RegisteredUser(db.Model):
         'permission': user.role.permission
       }
 
-  # def save_to_db(self):
-  #   db.session.add(self)
-  #   db.session.commit()
+  def save_to_db(self):
+    db.session.add(self)
+    db.session.commit()
