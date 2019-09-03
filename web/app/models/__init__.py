@@ -5,7 +5,9 @@ from .user_role import UserRole
 from .user_permission import UserPermission
 from .user_login import UserLogin
 
+
 from .user_post import UserPost
-from .post_prompt import PostPrompt
+from .post_content import PostContent
 from .post_review import PostReview
-from .post_status import PostStatus
+from .post_prompt import PostPrompt
+
