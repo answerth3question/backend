@@ -5,13 +5,15 @@ from app.models import UserPost, PostContent
 post_bp = Blueprint('post_bp', __name__)
 
 @post_bp.route('/', methods=['GET', 'POST'])
-@with_permission('contributer')
+# @with_permission('contributer')
 def post():
   user_id = get_jwt_identity()
 
   if request.method == 'GET':
     try:
-      return jsonify({ 'posts': [p.get_complete() for p in UserPost.query.all()] })
+      posts_list = [p.get_complete() for p in UserPost.query.all()]
+      
+      return jsonify(posts_list)
     
     except:
       abort(500)
