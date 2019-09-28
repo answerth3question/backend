@@ -1,4 +1,4 @@
-from app.db import db
+from app.database.db import db
 
 class RevokedToken(db.Model):
   jti = db.Column(db.String(120), primary_key=True)

@@ -5,7 +5,7 @@ from datetime import timedelta
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_raw_jwt
 
-from app.models import UserLogin
+from app.database.models import UserLogin
 import app.helpers.auth as auth_helper
 
 auth_bp = Blueprint('auth_bp', __name__)

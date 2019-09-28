@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy.dialects.postgresql import TIMESTAMP
-from app.db import db
+from app.database.db import db
 
 class UserLogin(db.Model):
   id = db.Column(db.Integer, primary_key=True)

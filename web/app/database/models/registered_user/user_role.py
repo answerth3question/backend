@@ -1,5 +1,5 @@
-from app.db import db
-from app.models.registered_user import user_role_permission
+from app.database.db import db
+from app.database.models.registered_user import user_role_permission
 
 class UserRole(db.Model):
   id = db.Column(db.Integer, primary_key=True)

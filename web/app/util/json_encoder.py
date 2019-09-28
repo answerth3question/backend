@@ -1,7 +1,7 @@
 from flask.json import JSONEncoder
 from datetime import date, tzinfo, timedelta
 from uuid import UUID
-from app.db import db
+from app.database.db import db
 
 class SimpleUTC(tzinfo):
   def tzname(self, **kwargs):

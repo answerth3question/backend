@@ -1,4 +1,4 @@
-from app.db import db
+from app.database.db import db
 
 class UserPermission(db.Model):
   id = db.Column(db.Integer, primary_key=True)

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, abort
 from app.util.jwt_manager import with_permission, get_jwt_identity
-from app.models import UserPost, PostContent
+from app.database.models import UserPost, PostContent
 
 post_bp = Blueprint('post_bp', __name__)
 
