@@ -1,47 +1,43 @@
-from app.main import create_app
-from app.config import BaseConfig
-from .db import db
-from .models import (
+from app.database.db import db
+from app.database.models import (
   UserRole, UserPermission, user_role_permission,
   ReviewStatusKind
 )
 
-def main():
-  app = create_app(BaseConfig)
-  with app.app_context():
-    role_contributer = UserRole(name='contributer')
-    role_reviewer = UserRole(name='reviewer')
-    role_admin = UserRole(name='admin')
-  
-    perm_contributer = UserPermission(name='contributer')
-    perm_reviewer = UserPermission(name='reviewer')
-    perm_admin = UserPermission(name='admin')
+def seed_db():
+  role_contributer = UserRole(name='contributer')
+  role_reviewer = UserRole(name='reviewer')
+  role_admin = UserRole(name='admin')
 
-    role_contributer.permission.append(perm_contributer)
+  db.session.add_all([
+    role_contributer,
+    role_reviewer,
+    role_admin,
+  ])
+ 
+  perm_contributer = UserPermission(name='contributer')
+  perm_reviewer = UserPermission(name='reviewer')
+  perm_admin = UserPermission(name='admin')
 
-    role_reviewer.permission.append(perm_contributer)
-    role_reviewer.permission.append(perm_reviewer)
+  role_contributer.permission.append(perm_contributer)
 
-    role_admin.permission.append(perm_contributer)
-    role_admin.permission.append(perm_reviewer)
-    role_admin.permission.append(perm_admin)
+  role_reviewer.permission.append(perm_contributer)
+  role_reviewer.permission.append(perm_reviewer)
 
-    review_status_kinds = [
-      ReviewStatusKind(name='pending'),
-      ReviewStatusKind(name='rejected'),
-      ReviewStatusKind(name='approved'),
-    ]
+  role_admin.permission.append(perm_contributer)
+  role_admin.permission.append(perm_reviewer)
+  role_admin.permission.append(perm_admin)
 
-    db.session.bulk_save_objects([
-      role_contributer,
-      role_reviewer,
-      role_admin,
-      perm_contributer,
-      perm_reviewer,
-      perm_admin
-    ])
-    db.session.bulk_save_objects(review_status_kinds)
-    db.session.commit()
+  db.session.add_all([
+    perm_contributer,
+    perm_reviewer,
+    perm_admin
+  ])
 
-if __name__ == '__main__':
-  main()
+  db.session.add_all([
+    ReviewStatusKind(name='pending'),
+    ReviewStatusKind(name='rejected'),
+    ReviewStatusKind(name='approved'),
+  ])
+
+  db.session.commit()
