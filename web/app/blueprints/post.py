@@ -10,7 +10,6 @@ from app.database.models import Post
 post_bp = Blueprint('post_bp', __name__)
 
 @post_bp.route('/', methods=['GET', 'POST'])
-# @with_permission('contributer')
 @jwt_optional
 def post():
   user_id = get_jwt_identity() # if no jwt is sent in header, `user_id` will be None

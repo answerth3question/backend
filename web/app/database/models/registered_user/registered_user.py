@@ -11,19 +11,40 @@ class RegisteredUser(db.Model):
   role = db.relationship('UserRole', lazy='joined')
   logins = db.relationship('UserLogin', lazy='dynamic')
   posts = db.relationship('Post', lazy='dynamic')
+  prompts = db.relationship('Prompt', lazy='dynamic')
 
   def __repr__(self):
     return f"RegisteredUser {self.id} - {self.email} - {self.username} - {self.role}"
 
   @classmethod
-  def get_complete(cls, id):
-    user = cls.query.get(id)
+  def get_profile_user(cls, user_id):
+    '''Use this method to fetch data to display when any given logged on user views 
+    their profile information'''
+    user = cls.query.get(user_id)
     if user:
-      return {
-        'logins': [l.date_created for l in user.logins.all()],
-        'role': user.role,
-        'permission': user.role.permission
-      }
+      return dict(
+        id=user.id,
+        username=user.username,
+        email=user.email,
+        role=user.role,
+        posts=[p for p in user.posts.all()],
+        prompts=[p for p in user.prompts.all()],
+      )
+
+  @classmethod
+  def get_profile_admin(cls, user_id):
+    '''Use this method to fetch data about users for admins to review/use in their tasks'''
+    user = cls.query.get(user_id)
+    if user:
+      return dict(
+        id=user.id,
+        username=user.username,
+        email=user.email,
+        role=user.role,
+        posts=[p.with_reviews() for p in user.posts.all()],
+        prompts=[p.with_reviews() for p in user.prompts.all()],
+        logins=[l for l in user.logins.all()],
+      )
 
   def save_to_db(self):
     db.session.add(self)

@@ -8,12 +8,8 @@ user_bp = Blueprint('user_bp', __name__)
 @jwt_required
 def profile():
   user_id = get_jwt_identity()
-  user = RegisteredUser.query.get(user_id)
+  user = RegisteredUser.get_profile_user(user_id)
   if user:
-    return jsonify({
-      'username': user.username,
-      'email': user.email,
-      'role': user.role.name
-    })
+    return jsonify(user)
   abort(404)
 

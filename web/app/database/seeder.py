@@ -1,8 +1,5 @@
 from app.database.db import db
-from app.database.models import (
-  UserRole, UserPermission, user_role_permission,
-  ReviewStatusKind
-)
+from app.database.models import UserRole, UserPermission, ReviewStatusKind
 
 def seed_db():
   role_contributer = UserRole(name='contributer')

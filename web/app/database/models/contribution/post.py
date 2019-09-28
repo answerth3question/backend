@@ -11,3 +11,7 @@ class Post(db.Model):
   status = db.Column(db.String, db.ForeignKey('review_status_kind.name'), default='pending')
   prompt_id = db.Column(UUID(as_uuid=True), db.ForeignKey('prompt.id'), nullable=False)
   reviews = db.relationship('PostReview', lazy='dynamic')
+
+  def with_reviews(self):
+    self.reviews = [r for r in self.reviews.all()]
+    return self

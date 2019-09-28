@@ -12,3 +12,7 @@ class Prompt(db.Model):
   posts = db.relationship('Post', lazy='dynamic', 
                           backref=db.backref('prompt', lazy='joined', uselist=False))
   reviews = db.relationship('PromptReview', lazy='dynamic')
+
+  def with_reviews(self):
+    self.reviews = [r for r in self.reviews.all()]
+    return self

@@ -7,14 +7,16 @@ admin_bp = Blueprint('admin_bp', __name__)
 @admin_bp.route("/users")
 @with_permission('admin')
 def get_users():
+  '''get list of all app users'''
   return jsonify({ 'users': RegisteredUser.query.all() })
   
   
-@admin_bp.route("/user/<user_id>", methods=["GET", "PUT"])
+@admin_bp.route("/users/<user_id>", methods=["GET", "PUT"])
 @with_permission("admin")
-def get_user(user_id):
+def user(user_id):
+  '''admin endpoint for actions releated to specific user'''
   if request.method == "GET":
-    user = RegisteredUser.get_complete(user_id)
+    user = RegisteredUser.get_profile_admin(user_id)
 
     return jsonify({ 'user': user })
 
