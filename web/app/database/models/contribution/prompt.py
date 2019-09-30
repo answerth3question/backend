@@ -16,3 +16,20 @@ class Prompt(db.Model):
   def with_reviews(self):
     self.reviews = [r for r in self.reviews.all()]
     return self
+
+  def save_to_db(self):
+    db.session.add(self)
+    db.session.commit()
+
+  @classmethod
+  def get_pending(cls):
+    return cls.query.filter_by(status='pending').all()
+
+  @classmethod
+  def get_approved(cls):
+    return cls.query.filter_by(status='approved').all()
+  
+  @classmethod
+  def get_rejected(cls):
+    return cls.query.filter_by(status='rejected').all()
+
