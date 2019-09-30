@@ -8,16 +8,6 @@ from app.database.models import Post
 
 post_bp = Blueprint('post_bp', __name__)
 
-@post_bp.route('/approved', methods=['GET'])
-def get_approved_posts():
-  try:
-    approved = Post.get_approved()
-    return jsonify(approved)
-  except BaseException as e:
-    print(e)
-    abort(500)  
-
-
 @post_bp.route('/create', methods=['POST'])
 @with_permission('contributer')
 def create_post():
@@ -32,6 +22,35 @@ def create_post():
   except BaseException as e:
     print(e)
     abort(500)
+
+@post_bp.route('/approved', methods=['GET'])
+def get_approved_posts():
+  try:
+    approved = Post.get_approved()
+    return jsonify(approved)
+  except BaseException as e:
+    print(e)
+    abort(500)  
+
+@post_bp.route('/pending', methods=['GET'])
+@with_permission('reviewer')
+def get_pending_posts():
+  try:
+    pending = Post.get_pending()
+    return jsonify(pending)
+  except BaseException as e:
+    print(e)
+    abort(500)  
+
+@post_bp.route('/rejected', methods=['GET'])
+@with_permission('reviewer')
+def get_rejected_posts():
+  try:
+    rejected = Post.get_rejected()
+    return jsonify(rejected)
+  except BaseException as e:
+    print(e)
+    abort(500)  
 
 @post_bp.route('/all', methods=['GET'])
 @with_permission('reviewer')

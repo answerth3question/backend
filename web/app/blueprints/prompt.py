@@ -7,15 +7,6 @@ from app.database.models import Prompt
 
 prompt_bp = Blueprint('prompt_bp', __name__)
 
-@prompt_bp.route('/approved', methods=['GET'])
-def get_approved_prompts():
-  try:
-    approved = Prompt.get_approved()
-    return jsonify(approved)
-  except BaseException as e:
-    print(e)
-    abort(500)
-
 @prompt_bp.route('/create', methods=['POST'])
 @with_permission('contributer')
 def create_prompt():
@@ -26,6 +17,35 @@ def create_prompt():
                     content=body['content'])
     prompt.save_to_db()
     return 'success', 201
+  except BaseException as e:
+    print(e)
+    abort(500)
+
+@prompt_bp.route('/approved', methods=['GET'])
+def get_approved_prompts():
+  try:
+    approved = Prompt.get_approved()
+    return jsonify(approved)
+  except BaseException as e:
+    print(e)
+    abort(500)
+
+@prompt_bp.route('/pending', methods=['GET'])
+@with_permission('reviewer')
+def get_pending_prompts():
+  try:
+    pending = Prompt.get_pending()
+    return jsonify(pending)
+  except BaseException as e:
+    print(e)
+    abort(500)
+
+@prompt_bp.route('/rejected', methods=['GET'])
+@with_permission('reviewer')
+def get_rejected_prompts():
+  try:
+    rejected = Prompt.get_rejected()
+    return jsonify(pending)
   except BaseException as e:
     print(e)
     abort(500)
