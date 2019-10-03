@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime
 from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP
+from flask import request
 from app.database.db import db
 
 class Prompt(db.Model):
@@ -13,23 +14,26 @@ class Prompt(db.Model):
                           backref=db.backref('prompt', lazy='joined', uselist=False))
   reviews = db.relationship('PromptReview', lazy='dynamic')
 
-  def with_reviews(self):
-    self.reviews = [r for r in self.reviews.all()]
-    return self
+  def as_dict(self, include_reviews=False):
+    ret = {}
+    if include_reviews:
+      ret.update({'reviews': self.reviews.all()})
+    ret.update({ c.name: getattr(self, c.name) for c in self.__table__.columns })
+    return ret
 
   def save_to_db(self):
     db.session.add(self)
     db.session.commit()
 
   @classmethod
-  def get_pending(cls):
-    return cls.query.filter_by(status='pending').all()
-
-  @classmethod
-  def get_approved(cls):
-    return cls.query.filter_by(status='approved').all()
-  
-  @classmethod
-  def get_rejected(cls):
-    return cls.query.filter_by(status='rejected').all()
-
+  def get_paginated(cls, status='', include_reviews=False, order_by='date_created', desc=True):
+    result = cls.query.filter_by(status=status)\
+      .order_by(getattr(cls, order_by).desc() if desc else getattr(cls, order_by).asc())\
+      .paginate()
+    
+    return dict(
+      page=result.page,
+      has_next=result.has_next,
+      per_page=result.per_page,
+      items=[x.as_dict(include_reviews) for x in result.items]
+    )

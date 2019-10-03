@@ -2,7 +2,7 @@
 prompt_bp endpoints should be used to get and submit prompts.
 '''
 from flask import Blueprint, request, jsonify, abort
-from app.util.jwt_manager import with_permission, get_jwt_identity
+from app.util.jwt_manager import with_permission, get_jwt_identity, jwt_optional, get_jwt_claims
 from app.database.models import Prompt
 
 prompt_bp = Blueprint('prompt_bp', __name__)
@@ -22,19 +22,24 @@ def create_prompt():
     abort(500)
 
 @prompt_bp.route('/approved', methods=['GET'])
+@jwt_optional
 def get_approved_prompts():
   try:
-    approved = Prompt.get_approved()
+    claims = get_jwt_claims()
+    include_reviews = request.args.get('include_reviews', type=int)
+    include_reviews = include_reviews and 'reviewer' in claims.get('permission', [])
+    approved = Prompt.get_paginated('approved', include_reviews)
     return jsonify(approved)
   except BaseException as e:
-    print(e)
+    print('hshdhdhd',e)
     abort(500)
 
 @prompt_bp.route('/pending', methods=['GET'])
 @with_permission('reviewer')
 def get_pending_prompts():
   try:
-    pending = Prompt.get_pending()
+    include_reviews = request.args.get('include_reviews', type=int)
+    pending = Prompt.get_paginated('pending', include_reviews, desc=False)
     return jsonify(pending)
   except BaseException as e:
     print(e)
@@ -44,21 +49,22 @@ def get_pending_prompts():
 @with_permission('reviewer')
 def get_rejected_prompts():
   try:
-    rejected = Prompt.get_rejected()
-    return jsonify(pending)
+    include_reviews = request.args.get('include_reviews', type=int)
+    rejected = Prompt.get_paginated('rejected', include_reviews)
+    return jsonify(rejected)
   except BaseException as e:
     print(e)
     abort(500)
 
-@prompt_bp.route('/all', methods=['GET'])
-@with_permission('reviewer')
-def get_all_prompts():
-  try:
-    return jsonify({
-      'pending': Prompt.get_pending(),
-      'rejected': Prompt.get_rejected(),
-      'approved': Prompt.get_approved(),
-    })
-  except BaseException as e:
-    print(e)
-    abort(500)
+@prompt_bp.route('/page', methods=['GET'])
+def get_page():
+  include = request.args.get('include', '').split(',')
+
+  print(include)
+
+  items = Prompt.query\
+    .order_by(Prompt.date_created.desc())\
+    .paginate()
+
+
+  return jsonify(items)

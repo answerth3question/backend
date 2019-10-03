@@ -25,7 +25,8 @@ def login_user():
   login_record.save_to_db()
 
   if user.role.name == 'admin':
-    token_exp = timedelta(hours=0.5) if user.email != 'jacob.albright23@gmail.com' else timedelta(hours=2) # half hour
+    token_exp = timedelta(hours=2) # TODO: change this
+    # token_exp = timedelta(hours=0.5) if user.email != 'jacob.albright23@gmail.com' else timedelta(hours=2) # half hour
 
   elif user.role.name == 'reviewer':
     token_exp = timedelta(hours==1) # 1 hour
