@@ -4,6 +4,7 @@ prompt_bp endpoints should be used to get and submit prompts.
 from flask import Blueprint, request, jsonify, abort
 from app.util.jwt_manager import with_permission, get_jwt_identity, jwt_optional, get_jwt_claims
 from app.database.models import Prompt
+from app.util.validators import PromptReq
 
 prompt_bp = Blueprint('prompt_bp', __name__)
 
@@ -21,50 +22,60 @@ def create_prompt():
     print(e)
     abort(500)
 
+
 @prompt_bp.route('/approved', methods=['GET'])
 @jwt_optional
 def get_approved_prompts():
   try:
+    args = PromptReq.get(request.args)
     claims = get_jwt_claims()
-    include_reviews = request.args.get('include_reviews', type=int)
-    include_reviews = include_reviews and 'reviewer' in claims.get('permission', [])
-    approved = Prompt.get_paginated('approved', include_reviews)
+    is_reviewer = 'reviewer' in claims.get('permission', [])
+    approved = Prompt.get_paginated(status='approved',
+                                    include_reviews=is_reviewer)
     return jsonify(approved)
   except BaseException as e:
     print('hshdhdhd',e)
     abort(500)
 
+
 @prompt_bp.route('/pending', methods=['GET'])
 @with_permission('reviewer')
 def get_pending_prompts():
   try:
-    include_reviews = request.args.get('include_reviews', type=int)
-    pending = Prompt.get_paginated('pending', include_reviews, desc=False)
+    args = PromptReq.get(request.args)
+    pending = Prompt.get_paginated(status='pending',
+                                  include_reviews=True,
+                                  desc=False)
     return jsonify(pending)
   except BaseException as e:
     print(e)
     abort(500)
 
+
 @prompt_bp.route('/rejected', methods=['GET'])
 @with_permission('reviewer')
 def get_rejected_prompts():
   try:
-    include_reviews = request.args.get('include_reviews', type=int)
-    rejected = Prompt.get_paginated('rejected', include_reviews)
+    args = PromptReq.get(request.args)
+    rejected = Prompt.get_paginated(status='rejected',
+                                    include_reviews=True,)
     return jsonify(rejected)
   except BaseException as e:
     print(e)
     abort(500)
 
+
 @prompt_bp.route('/page', methods=['GET'])
 def get_page():
-  include = request.args.get('include', '').split(',')
+  cursor = request.args.get('cursor')
+  limit = request.args.get('limit', 2, type=int)
+  status = request.args.get('status', 'pending')
+  try:
+    no = Prompt.new_to_old(cursor=cursor, status='approved', limit=limit)
+    on = Prompt.old_to_new(cursor=cursor, status='approved', limit=limit)
+    return jsonify({ 'new_to_old': no, 'old_to_new': on })
+  except ValueError as e:
+    print(e)
+    abort(500)
 
-  print(include)
-
-  items = Prompt.query\
-    .order_by(Prompt.date_created.desc())\
-    .paginate()
-
-
-  return jsonify(items)
+  
