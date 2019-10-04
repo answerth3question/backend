@@ -29,9 +29,21 @@ def get_approved_prompts():
   try:
     args = PromptReq.get(request.args)
     claims = get_jwt_claims()
-    is_reviewer = 'reviewer' in claims.get('permission', [])
-    approved = Prompt.get_paginated(status='approved',
-                                    include_reviews=is_reviewer)
+    if args['sort_order'] == 'desc':
+
+      approved = Prompt.new_to_old(status='approved',
+                                  cursor=args['cursor'],
+                                  limit=args['limit'])
+    else:
+      approved = Prompt.old_to_new(status='approved',
+                                  cursor=args['cursor'],
+                                  limit=args['limit'])
+
+    approved = [{ 
+      **x.cols_dict(),
+      'reviews': x.reviews.all() # if claims and 'reviewer' in claims['permission'] else []
+    } for x in approved]
+
     return jsonify(approved)
   except BaseException as e:
     print('hshdhdhd',e)
@@ -43,7 +55,6 @@ def get_approved_prompts():
 def get_pending_prompts():
   try:
     args = PromptReq.get(request.args)
-    print('ARRRRGS', args)
     if args['sort_order'] == 'desc':
 
       pending = Prompt.new_to_old(status='pending',
@@ -54,9 +65,8 @@ def get_pending_prompts():
                                   cursor=args['cursor'],
                                   limit=args['limit'])
 
-    # pending = Prompt.get_paginated(status='pending',
-    #                               include_reviews=True,
-    #                               desc=False)
+    pending = [{ **x.cols_dict(), 'reviews': x.reviews.all() } for x in pending]
+
     return jsonify(pending)
   except BaseException as e:
     print('error getting pending prompts:', e)
@@ -68,8 +78,17 @@ def get_pending_prompts():
 def get_rejected_prompts():
   try:
     args = PromptReq.get(request.args)
-    rejected = Prompt.get_paginated(status='rejected',
-                                    include_reviews=True,)
+    if args['sort_order'] == 'desc':
+      rejected = Prompt.new_to_old(status='rejected',
+                                  cursor=args['cursor'],
+                                  limit=args['limit'])
+    else:
+      rejected = Prompt.old_to_new(status='rejected',
+                                  cursor=args['cursor'],
+                                  limit=args['limit'])
+
+    rejected = [{ **x.cols_dict(), 'reviews': x.reviews.all() } for x in rejected]
+
     return jsonify(rejected)
   except BaseException as e:
     print(e)

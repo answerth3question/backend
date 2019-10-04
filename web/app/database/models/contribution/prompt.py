@@ -16,12 +16,12 @@ class Prompt(db.Model):
   reviews = db.relationship('PromptReview', lazy='dynamic')
 
 
-  def as_dict(self, include_reviews=False):
-    ret = {}
-    if include_reviews:
-      ret.update({'reviews': self.reviews.all()})
-    ret.update({ c.name: getattr(self, c.name) for c in self.__table__.columns })
-    return ret
+  # def as_dict(self, include_reviews=False):
+  #   ret = {}
+  #   if include_reviews:
+  #     ret.update({'reviews': self.reviews.all()})
+  #   ret.update({ c.name: getattr(self, c.name) for c in self.__table__.columns })
+  #   return ret
 
 
   def save_to_db(self):

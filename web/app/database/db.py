@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy, Model
 from flask_migrate import Migrate
 
 class DictModel(Model):
-  def as_dict(self):
+  def cols_dict(self):
     return { c.name: getattr(self, c.name) for c in self.__table__.columns }
 
 db = SQLAlchemy(model_class=DictModel)

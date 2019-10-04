@@ -21,7 +21,7 @@ class CustomJSONEncoder(JSONEncoder):
     elif isinstance(obj, UUID):
       return str(obj)
     elif isinstance(obj, db.Model):
-      return obj.as_dict()
+      return obj.cols_dict()
     elif isinstance(obj, Pagination):
       return dict(
         page=obj.page,
