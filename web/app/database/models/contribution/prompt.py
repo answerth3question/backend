@@ -41,10 +41,10 @@ class Prompt(db.Model):
       per_page=result.per_page,
       items=[x.as_dict(include_reviews) for x in result.items]
     )
-
+    
 
   @classmethod
-  def new_to_old(cls, cursor=None, status='', limit=50):
+  def new_to_old(cls, status='', cursor=None, limit=50):
     if not status:
       raise ValueError('no status provied')
 
@@ -60,7 +60,7 @@ class Prompt(db.Model):
 
 
   @classmethod
-  def old_to_new(cls, cursor=None, status='', limit=50):
+  def old_to_new(cls, status='', cursor=None, limit=50):
     if not status:
       raise ValueError('no status provied')
 

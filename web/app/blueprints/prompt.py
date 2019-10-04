@@ -39,16 +39,27 @@ def get_approved_prompts():
 
 
 @prompt_bp.route('/pending', methods=['GET'])
-@with_permission('reviewer')
+# @with_permission('reviewer')
 def get_pending_prompts():
   try:
     args = PromptReq.get(request.args)
-    pending = Prompt.get_paginated(status='pending',
-                                  include_reviews=True,
-                                  desc=False)
+    print('ARRRRGS', args)
+    if args['sort_order'] == 'desc':
+
+      pending = Prompt.new_to_old(status='pending',
+                                  cursor=args['cursor'],
+                                  limit=args['limit'])
+    else:
+      pending = Prompt.old_to_new(status='pending',
+                                  cursor=args['cursor'],
+                                  limit=args['limit'])
+
+    # pending = Prompt.get_paginated(status='pending',
+    #                               include_reviews=True,
+    #                               desc=False)
     return jsonify(pending)
   except BaseException as e:
-    print(e)
+    print('error getting pending prompts:', e)
     abort(500)
 
 

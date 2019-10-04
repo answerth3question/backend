@@ -1,17 +1,13 @@
-from app.util.validators.lib import json_from, Coerce, All, Any, Required
+from app.util.validators.lib import json_from, Custom, Coerce, All, Any
 
 class PromptReq:
 
   @classmethod
   def get(cls, src):
     return json_from(src, {
-      # Required('include_reviews', default=0): Coerce(int),
+      'cursor': Custom.UUID,
 
-      Required('page', default=1): Coerce(int),
+      ('limit', 50): Coerce(int),
 
-      Required('per_page', default=20): Coerce(int),
-
-      Required('order_by', default='date_created'): All(str, Any('date_created')),
-
-      Required('sort_order', default='desc'): All(str, Any('asc', 'desc'))
+      ('sort_order', 'desc'): All(str, Any('asc', 'desc')),
     })
